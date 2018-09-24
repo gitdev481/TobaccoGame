@@ -80,7 +80,7 @@ public class UIManager : MonoBehaviour {
     /// </summary>
     public void ReloadGame()
     {
-        SceneManager.LoadScene("BreakoutGame");
+        SceneManager.LoadScene("BlocBlast");
     }
 
     /// <summary>

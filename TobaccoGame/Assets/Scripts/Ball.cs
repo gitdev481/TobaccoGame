@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 
+/// <summary>
+/// This class is responsible for the ball logic and functionality.
+/// </summary>
 public class Ball : MonoBehaviour {
 
     #region SINGLETON PATTERN
@@ -42,20 +45,24 @@ public class Ball : MonoBehaviour {
     private int destroyedTilesCountThreshold = 5;
     public int playerLives = 0;
     private const int maxPlayerLives = 3;
+    private float referenceResolution = 2048;
     #endregion
 
     void Start ()
     {
+        ballFireForce /= (referenceResolution / Screen.width); 
         playerLives = maxPlayerLives;
         ballRigidBody = gameObject.GetComponent<Rigidbody2D>();
     }
-	
 	
 	void Update ()
     {
         ManageCollisionCheckDelay();
     }
 
+    /// <summary>
+    /// Manages the collision check delay.
+    /// </summary>
     public void ManageCollisionCheckDelay()
     {
         if (!collisionDelayTimerStarted)
@@ -241,6 +248,5 @@ public class Ball : MonoBehaviour {
     {
         GetComponent<Rigidbody2D>().velocity = Vector2.zero;
     }
-
 
 }
