@@ -37,18 +37,5 @@ public class FlavourDetectionWall : MonoBehaviour {
             }
         }
     }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.tag == "LEFT" || collision.tag == "RIGHT")
-        {
-            //int flavour = (int)collision.GetComponent<TileRow>().tileFlavour;
-            //TileManager.Instance.RemoveFlavourFromList(flavour);
-
-            //GameLogicManager.Instance.UpdateCurrentFlavour();
-        }
-    }
-
-
    
 }

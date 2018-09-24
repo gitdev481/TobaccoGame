@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class controls various in-game buttons.
+/// </summary>
 public class ButtonManager : MonoBehaviour {
 
     #region SINGLETON PATTERN
@@ -26,62 +29,34 @@ public class ButtonManager : MonoBehaviour {
     }
     #endregion
 
-
-    float titleScreenFadeTime = 0.5f;
-   // public Renderer titleScreenRenderer;
-    public Image titleScreenRenderer;
-    private bool startTitleScreenFade = false;
-  
-    // Use this for initialization
-    void Start ()
-    {
-		
-	}
-	
-	// Update is called once per frame
-	void Update ()
-    {
-
-        ManageTitleScreenFade();
-    }
-
-    public void ManageTitleScreenFade()
-    {
-        if (!startTitleScreenFade)
-            return;
-
-        Material tempMaterial = Instantiate<Material>(titleScreenRenderer.material);
-        titleScreenRenderer.material = tempMaterial;
-            
-           
-        Color tempColor = tempMaterial.color;
-
-        tempMaterial.color = new Color(tempColor.r, tempColor.g, tempColor.b, tempColor.a - (Time.deltaTime/ titleScreenFadeTime));
-        // Color tempColor = titleScreenRenderer.GetComponent<Renderer>().material.color;
-        // tempColor.a -= Time.deltaTime / titleScreenFadeTime;
-        // titleScreenRenderer.GetComponent<Renderer>().material.color = tempColor;
-
-        if (tempColor.a <= 0)
-           startTitleScreenFade = false;
-      
-    }
-
-    //Resets the game (goes back to the title screen).
-    public void ResetGame()
-    {
-
-    }
-
-    //Fades the title screen out and disables it
+    /// <summary>
+    /// Fades the title screen out and disables it.
+    /// </summary>
     public void TitleScreenFadeToGame()
     {
-        startTitleScreenFade = true;
+        PageManager.Instance.FadeOutTitleScreen();
+        SoundManager.Instance.PlaySound("backgroundmusic");
     }
 
 
-    //Controls the functionality of the Page 2 Play Button
+    /// <summary>
+    /// Controls the functionality of the Page 2 Play Button.
+    /// </summary>
     public void Page2PlayButton()
     {
-        
+        if (UIManager.Instance.CheckIfNameEntered())
+        {
+            UIManager.Instance.SetPlayerName();
+            PageManager.Instance.FadeOutPage2();
+            UIManager.Instance.redPlayButtonAnimator.gameObject.SetActive(true);
+        }
+    }
+
+    /// <summary>
+    /// Controls the functionality of the red/blue play button.
+    /// </summary>
+    public void RedOrBluePlayButton()
+    {
+        UIManager.Instance.HideTutorial();
     }
 }

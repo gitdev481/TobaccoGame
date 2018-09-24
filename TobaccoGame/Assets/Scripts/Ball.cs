@@ -6,31 +6,54 @@ using System.Linq;
 
 public class Ball : MonoBehaviour {
 
+    #region SINGLETON PATTERN
+    public static Ball _instance;
+    public static Ball Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = GameObject.FindObjectOfType<Ball>();
+                if (_instance == null)
+                {
+                    GameObject container = new GameObject("Ball");
+                    _instance = container.AddComponent<Ball>();
+                }
+
+            }
+            return _instance;
+        }
+    }
+    #endregion
+
 
     #region variables
 
     public GameObject ballSpawn;
-    private Vector3 ballSpawnPoint;
     private Rigidbody2D ballRigidBody;
-    private float ballFireForce = 900f;
+    private float ballFireForce = 1200f;
     public List<Sprite> ballFlavours = new List<Sprite>();
 
     private float collisionDelayTimer = 0f;
     private float collisionDelayTimerThreshold = 0.1f;
     private bool collisionDelayTimerStarted = false;
+    private int destroyedTilesCount = 0;
+    private int destroyedTilesCountThreshold = 5;
+    public int playerLives = 0;
+    private const int maxPlayerLives = 3;
     #endregion
 
     void Start ()
     {
+        playerLives = maxPlayerLives;
         ballRigidBody = gameObject.GetComponent<Rigidbody2D>();
-        FireBallUponReset();
     }
 	
 	
 	void Update ()
     {
         ManageCollisionCheckDelay();
-
     }
 
     public void ManageCollisionCheckDelay()
@@ -54,7 +77,7 @@ public class Ball : MonoBehaviour {
     /// </summary>
     public void ResetBallPosition()
     {
-        ballSpawnPoint = ballSpawn.transform.position;
+        transform.position = ballSpawn.transform.position;
     }
 
     /// <summary>
@@ -78,8 +101,14 @@ public class Ball : MonoBehaviour {
     private void OnCollisionEnter2D(Collision2D collision)
     {
         ManageTileCollisions(collision);
+        ManagePlayerDeaths(collision);
     }
 
+
+    /// <summary>
+    /// Responsible for ball logic when it collides with a tile.
+    /// </summary>
+    /// <param name="collision"></param>
     public void ManageTileCollisions(Collision2D collision)
     {
         if (collisionDelayTimerStarted)
@@ -94,24 +123,36 @@ public class Ball : MonoBehaviour {
                 {
                     TileManager.Instance.RemoveFlavourFromList(TileManager.Instance.currentFlavour);
                     RemoveAllFrontRowsWithCurrentFlavour(TileManager.Instance.currentFlavour);
-
+                    GameLogicManager.Instance.IncreaseScore(GameLogicManager.Instance.tileDestroyedScore);
+                    UIManager.Instance.StartFivePointDisplay();
+                    destroyedTilesCount++;
                     if (CheckIfAllFrontRowsDestroyed())
                     {
-                        TileManager.Instance.MoveAllTilesDown();
+                       
                         if (collision.gameObject.GetComponent<TileRow>().isTileBottom)
                         {
+                            TileManager.Instance.MoveAllTilesDown(true);
                             TileManager.Instance.SpawnNewRowOfTiles(true);
+                        }
+                        else
+                        {
+                            TileManager.Instance.MoveAllTilesDown(false);
+                            TileManager.Instance.SpawnNewRowOfTiles(false);
                         }
                     }
 
+                    CheckForDoublePointsOpportunity();
                     //GameLogicManager.Instance.UpdateCurrentFlavour();
                 }
                 collisionDelayTimerStarted = true;
             }
         }
-       
     }
 
+    /// <summary>
+    /// Checks if all the front rows are destroyed.
+    /// </summary>
+    /// <returns></returns>
     public bool CheckIfAllFrontRowsDestroyed()
     {
         TileRow[] tileRows = GameObject.FindObjectsOfType<TileRow>().ToArray();
@@ -124,15 +165,9 @@ public class Ball : MonoBehaviour {
             }
         }
         if(rowStillInFront> 0)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-     // return  (rowStillInFront > 0) ?  true :  false;
-               
+            return false;     
+        else        
+            return true;       
     }
 
     /// <summary>
@@ -155,6 +190,56 @@ public class Ball : MonoBehaviour {
                 }
             }
         }
+    }
+
+
+    /// <summary>
+    /// Responsible for ball logic when the ball hits the bottom of the screen
+    /// </summary>
+    /// <param name="collision"></param>
+    public void ManagePlayerDeaths(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "KILLCOLLIDER")
+        {
+            playerLives--;
+            ResetDestroyedTilesCount();
+            StopBall();
+            GameLogicManager.Instance.PauseTimer();
+
+            UIManager.Instance.StartYouMissedDisplay();
+        }
+
+    }
+
+    /// <summary>
+    /// Checks whether the player has destroyed enough tiles for a double points opportunity.
+    /// </summary>
+    public void CheckForDoublePointsOpportunity()
+    {
+        if(destroyedTilesCount >= destroyedTilesCountThreshold)
+        {
+            StopBall();
+            GameLogicManager.Instance.PauseTimer();
+            GameLogicManager.Instance.SetDidPlayerScoreOrDieBool(false);
+            UIManager.Instance.ShowQuestionScreen(false);
+            destroyedTilesCount = 0;
+        }
+    }
+
+    /// <summary>
+    /// Resets the destroyed tiles count.
+    /// </summary>
+    private void ResetDestroyedTilesCount()
+    {
+        destroyedTilesCount = 0;
+    }
+
+    /// <summary>
+    /// Stops the ball in its place.
+    /// </summary>
+    public void StopBall()
+    {
+        GetComponent<Rigidbody2D>().velocity = Vector2.zero;
     }
 
 

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
+/// <summary>
+/// This class manages tile spawning.
+/// </summary>
 public class TileManager : MonoBehaviour {
 
 
@@ -33,8 +36,10 @@ public class TileManager : MonoBehaviour {
     public List<int> tileFlavours = new List<int>();
     public int currentFlavour;
     private List<GameObject> allTileRows = new List<GameObject>();
-    private Vector3 moveDownVector = new Vector3(0, -59, 0);
+    private Vector3 moveDownTopVector = new Vector3(0, -59, 0);
+    private Vector3 moveDownBottomVector = new Vector3(0, -139, 0);
     public GameObject bottomTilesSpawnPosition;
+    public GameObject topTilesSpawnPosition;
     public GameObject tilesBottomPrefab;
     public GameObject tilesTopPrefab;
     public GameObject spawnedTilesParent;
@@ -43,14 +48,7 @@ public class TileManager : MonoBehaviour {
     private int nextRightRowFlavour;
     #endregion
 
-    void Start () {
-		
-	}
-	
-	
-	void Update () {
-		
-	}
+
 
     /// <summary>
     /// Adds the flavour from the row to the list.
@@ -81,14 +79,16 @@ public class TileManager : MonoBehaviour {
     /// </summary>
     public void ChooseRandomFlavour()
     {
-        
         int randomInt = Random.Range(0, tileFlavours.Count);
         currentFlavour = tileFlavours[randomInt];
     }
 
 
-
-    public void MoveAllTilesDown()
+    /// <summary>
+    /// Moves all tiles down.
+    /// </summary>
+    /// <param name="tilesWereBottom"></param>
+    public void MoveAllTilesDown(bool tilesWereBottom)
     {
         FindAllTiles();
 
@@ -96,23 +96,47 @@ public class TileManager : MonoBehaviour {
         {
             if (allTileRows[i].GetComponent<TileRow>().isTileBottom)
             {
-                allTileRows[i].gameObject.transform.localPosition = -moveDownVector;
+                if (tilesWereBottom)
+                {
+                    allTileRows[i].gameObject.transform.localPosition -= moveDownTopVector;
+                }
+                else
+                {
+                    allTileRows[i].gameObject.transform.localPosition -= moveDownBottomVector;
+                }
+                
             }
             else
             {
-                allTileRows[i].gameObject.transform.localPosition = moveDownVector;
+                if (tilesWereBottom)
+                {
+                    allTileRows[i].gameObject.transform.localPosition += moveDownTopVector;
+                }
+                else
+                {
+                    allTileRows[i].gameObject.transform.localPosition += moveDownBottomVector;
+                }
             }
             
         }
 
+        allTileRows.Clear();
+
     }
 
+    /// <summary>
+    /// Finds all tiles in the game and adds them to the list.
+    /// </summary>
     private void FindAllTiles()
     {
         allTileRows.AddRange(GameObject.FindGameObjectsWithTag("LEFT"));
         allTileRows.AddRange(GameObject.FindGameObjectsWithTag("RIGHT"));
     }
 
+    /// <summary>
+    /// Spawns a new row of tiles.
+    /// </summary>
+    /// <param name="isBottomTiles"></param>
     public void SpawnNewRowOfTiles(bool isBottomTiles)
     {
         GameObject temp;
@@ -125,6 +149,9 @@ public class TileManager : MonoBehaviour {
         else
         {
              temp = Instantiate(tilesTopPrefab);
+             temp.transform.localPosition = topTilesSpawnPosition.transform.localPosition;
+             temp.transform.GetChild(0).GetComponent<TileRow>().isTileBottom = false;
+             temp.transform.GetChild(1).GetComponent<TileRow>().isTileBottom = false;
         }
         temp.transform.SetParent(spawnedTilesParent.transform, false);
         temp.transform.GetChild(0).GetComponent<TileRow>().setupViaSpawn = true;
@@ -135,11 +162,11 @@ public class TileManager : MonoBehaviour {
         temp.transform.GetChild(1).GetComponent<TileRow>().SetTileSprites();
     }
 
-    public void SetupTileFlavours(int childIndex)
-    {
-
-    }
-
+    /// <summary>
+    /// Sets up the next flavours for the upcoming tiles.
+    /// </summary>
+    /// <param name="isLeftRow"></param>
+    /// <param name="flavour"></param>
     public void SetupNextFlavours(bool isLeftRow, int flavour)
     {
         if (isLeftRow)

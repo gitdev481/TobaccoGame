@@ -42,10 +42,10 @@ public class SoundManager : MonoBehaviour
         {
             if (soundList[i].name == soundName)
             {
-                if (!soundList[i].isPlaying)
-                {
+               // if (!soundList[i].isPlaying)
+                //{
                     soundList[i].Play();
-                }
+                //}
                 soundExists = true;
             }
         }

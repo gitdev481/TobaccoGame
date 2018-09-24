@@ -286,7 +286,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 375.42834, y: -0.5947571}
+  m_Offset: {x: 377.05756, y: -0.5947571}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -297,7 +297,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 939.7678, y: 122.92413}
+  m_Size: {x: 943.02625, y: 122.92413}
   m_EdgeRadius: 0
 --- !u!114 &114119537431003706
 MonoBehaviour:
@@ -445,7 +445,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65bdb91c33cd9334ca059b0f7779d56f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileFlavour: 0
+  tileFlavour: 8
   tileSprites:
   - {fileID: 21300000, guid: c35578983ba9ecb4781b3f4b4e7dc40a, type: 3}
   - {fileID: 21300000, guid: 21093b4e462d90f4bb536b1d36479989, type: 3}
@@ -527,7 +527,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65bdb91c33cd9334ca059b0f7779d56f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileFlavour: 0
+  tileFlavour: 10
   tileSprites:
   - {fileID: 21300000, guid: c35578983ba9ecb4781b3f4b4e7dc40a, type: 3}
   - {fileID: 21300000, guid: 21093b4e462d90f4bb536b1d36479989, type: 3}
@@ -845,7 +845,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -928, y: 672.45654}
+  m_AnchoredPosition: {x: -928, y: -59}
   m_SizeDelta: {x: 20, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224332169528858872

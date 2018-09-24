@@ -4,17 +4,44 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class is responsible for functionality of the paddle.
+/// </summary>
 public class Paddle : MonoBehaviour, IPointerUpHandler, IPointerDownHandler {
 
+    #region SINGLETON PATTERN
+    public static Paddle _instance;
+    public static Paddle Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = GameObject.FindObjectOfType<Paddle>();
+                if (_instance == null)
+                {
+                    GameObject container = new GameObject("Paddle");
+                    _instance = container.AddComponent<Paddle>();
+                }
+
+            }
+            return _instance;
+        }
+    }
+    #endregion
 
     #region variables
     Vector3 mousePosition;
     Vector3 wantedPosition;
     private bool paddleHeld = false;
     public List<Sprite> paddleFlavours = new List<Sprite>();
+    private bool firstClick = false;
     #endregion
 
-
+    void Update()
+    {
+        UpdatePaddlePosition();
+    }
 
     /// <summary>
     /// Detect current clicks on the GameObject (the one with the script attached).
@@ -22,8 +49,11 @@ public class Paddle : MonoBehaviour, IPointerUpHandler, IPointerDownHandler {
     /// <param name="pointerEventData"></param>
     public void OnPointerDown(PointerEventData pointerEventData)
     {
-        //Output the name of the GameObject that is being clicked.
-        Debug.Log(name + "Game Object Click in Progress");
+        if (!firstClick)
+        {
+            GameLogicManager.Instance.StartGame();
+            firstClick = true;
+        }
         paddleHeld = true;
     }
 
@@ -33,13 +63,7 @@ public class Paddle : MonoBehaviour, IPointerUpHandler, IPointerDownHandler {
     /// <param name="pointerEventData"></param>
     public void OnPointerUp(PointerEventData pointerEventData)
     {
-        Debug.Log(name + "No longer being clicked");
         paddleHeld = false;
-    }
-
-    void Update ()
-    {
-        UpdatePaddlePosition();
     }
 
     /// <summary>
@@ -47,15 +71,14 @@ public class Paddle : MonoBehaviour, IPointerUpHandler, IPointerDownHandler {
     /// </summary>
     public void UpdatePaddlePosition()
     {
+        if (GameLogicManager.Instance.isGamePaused())
+            return;
+
         mousePosition = Input.mousePosition;
-        // wantedPosition = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, transform.position.y, 10));
-        // wantedPosition = new Vector3(Mathf.Clamp(mousePosition.x,-(Screen.width/2)+100, 1800), transform.position.y, 0);
         wantedPosition = new Vector3(Mathf.Clamp(mousePosition.x, 250, 1800), transform.position.y, 0);
 
         if (paddleHeld)
-        {
             transform.position = wantedPosition;
-        }
     }
 
 

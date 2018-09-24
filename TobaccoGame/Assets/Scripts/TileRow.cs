@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 
+/// <summary>
+/// This class is attached to each row of tiles, and handle the functionality of that tile row.
+/// </summary>
 public class TileRow : MonoBehaviour {
 
     #region variables
@@ -20,12 +23,13 @@ public class TileRow : MonoBehaviour {
 
     void Start ()
     {
-        //  transform.GetChild(0).GetComponent<Image>().sprite = tileSprites[0];
         if(!setupViaSpawn)
             SetTileSprites();
-
     }
 
+    /// <summary>
+    /// Sets the sprites of all tiles in the row to be the correct flavour.
+    /// </summary>
     public void SetTileSprites()
     {
         tiles = gameObject.GetComponentsInChildren<Image>().ToList();
